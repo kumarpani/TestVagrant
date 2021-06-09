@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+}
+
+group 'com.consilio'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // google
+    implementation('com.google.guava:guava:30.1.1-jre')
+    implementation('com.google.code.gson:gson:2.8.0')
+    implementation('com.google.inject:guice:5.0.1')
+
+    //generic wait
+    implementation('org.awaitility:awaitility:4.0.3')
+
+    //Selenium
+    implementation('org.seleniumhq.selenium:selenium-java:3.141.59')
+    implementation('org.seleniumhq.selenium:selenium-support:3.141.59')
+
+    implementation('io.github.bonigarcia:webdrivermanager:4.0.0')
+
+    // log4j
+    testImplementation('org.slf4j:slf4j-log4j12:1.7.30')
+
+    //lombok
+    implementation('org.projectlombok:lombok:1.18.12')
+    annotationProcessor('org.projectlombok:lombok:1.18.12')
+    testImplementation('org.projectlombok:lombok:1.18.12')
+    testAnnotationProcessor('org.projectlombok:lombok:1.18.12')
+
+    // TestNG
+    testImplementation('org.testng:testng:6.14.3')
+}
+
+tasks.withType(Test) {
+    systemProperties = [
+            browser : System.getProperty('browser', 'chrome'),
+            headless: System.getProperty('headless', 'true'),
+            runMode : System.getProperty('runMode', 'local'),
+            env     : System.getProperty('env', 'qa')
+    ]
+}
+
+test {
+    useTestNG() {
+        parallel = "methods"
+        threadCount = 1
+        testLogging.showStandardStreams = true
+        useDefaultListeners = true
+        outputDirectory = file("$buildDir/" + System.getProperty('tags', 'NONE'))
+    }
+}
